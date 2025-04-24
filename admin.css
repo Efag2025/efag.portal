@@ -1,0 +1,91 @@
+* { box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+  padding: 40px;
+  color: #2e3a59;
+}
+h2 {
+font-size: 32px;
+margin-bottom: 40px;
+color: #1d3557;
+text-align: center;
+}
+
+.tabs {
+  margin-bottom: 30px;
+}
+.tab-button {
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 20px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.tab-button.active {
+  background-color: #1d3557;
+  color: white;
+}
+.card {
+background: white;
+border-radius: 16px;
+padding: 20px 30px;
+margin-bottom: 20px;
+box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+transition: transform 0.2s ease;
+}
+.card:hover {
+transform: scale(1.01);
+}
+
+
+.info {
+  margin-bottom: 10px;
+}
+.info strong {
+  display: inline-block;
+  width: 100px;
+}
+.actions {
+  margin-top: 15px;
+}
+
+.hidden {
+  display: none;
+}
+.container {
+max-width: 900px;
+margin: auto;
+background: #ffffff;
+padding: 40px;
+border-radius: 16px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+}
+
+button {
+padding: 10px 20px;
+border: none;
+border-radius: 10px;
+font-weight: 600;
+cursor: pointer;
+margin-right: 10px;
+transition: 0.3s;
+font-size: 14px;
+}
+.btn-aprovar {
+background: #0077b6;
+color: white;
+}
+.btn-aprovar:hover {
+background: #005f8e;
+}
+.btn-recusar {
+background: #e63946;
+color: white;
+}
+.btn-recusar:hover {
+background: #cc2f3c;
+}

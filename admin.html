@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Aprovar Cadastros</title>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+<script src="admin.js"></script>
+</head>
+<body>
+  <h2>Gerenciamento de Usuários</h2>
+  <div class="tabs">
+    <button class="tab-button active" onclick="mostrarAba('pendentes')">Pendentes</button>
+    <button class="tab-button" onclick="mostrarAba('aprovados')">Cadastrados</button>
+  </div>
+  <div id="pendentes"></div>
+  <div id="aprovados" class="hidden"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "painel-alunos-25f68.firebaseapp.com",
+      projectId: "painel-alunos-25f68",
+      storageBucket: "painel-alunos-25f68.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const divPendentes = document.getElementById("pendentes");
+    const divAprovados = document.getElementById("aprovados");
+
+    async function carregarUsuarios() {
+      const querySnapshot = await getDocs(collection(db, "usuariosPendentes"));
+      querySnapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const div = document.createElement("div");
+        div.setAttribute("data-id", docSnap.id);
+        div.classList.add("card");
+        div.innerHTML = `
+          <div class="info"><strong>Nome:</strong> ${data.nome}</div>
+          <div class="info"><strong>Usuário:</strong> ${data.usuario}</div>
+          <div class="info"><strong>Email:</strong> ${data.email}</div>
+          <div class="info"><strong>Pelotão:</strong> ${data.pelotao}</div>
+        `;
+
+        if (data.status === "pendente") {
+          const actions = document.createElement("div");
+          actions.classList.add("actions");
+          actions.innerHTML = `
+            <button class="btn-aprovar" onclick="aprovar('${docSnap.id}')">Aprovar</button>
+            <button class="btn-recusar" onclick="recusar('${docSnap.id}')">Recusar</button>
+          `;
+          div.appendChild(actions);
+          divPendentes.appendChild(div);
+        } else if (data.status === "aprovado") {
+          divAprovados.appendChild(div);
+        }
+      });
+      if (divPendentes.children.length === 0) {
+  divPendentes.innerHTML = "<p>Nenhum usuário pendente.</p>";
+}
+if (divAprovados.children.length === 0) {
+  divAprovados.innerHTML = "<p>Nenhum usuário cadastrado ainda.</p>";
+}
+
+    }
+    import { getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+window.aprovar = async function(id) {
+  const docRef = doc(db, "usuariosPendentes", id);
+  const snapshot = await getDoc(docRef);
+
+  if (snapshot.exists()) {
+    const dados = snapshot.data();
+
+    // Cria novo documento na coleção 'usuarios'
+    await setDoc(doc(db, "usuarios", id), {
+      ...dados,
+      status: "aprovado",
+      aprovadoEm: new Date()
+    });
+
+    // Remove da coleção 'usuariosPendentes' (opcional)
+    await deleteDoc(docRef);
+
+    // Atualiza visual na interface
+    const card = document.querySelector(`[data-id='${id}']`);
+    if (card) card.remove(); // remove da tela
+  }
+};
+
+ 
+
+window.recusar = async function(id) {
+  await updateDoc(doc(db, "usuariosPendentes", id), { status: "recusado" });
+  const card = document.querySelector(`[data-id='${id}']`);
+  if (card) {
+    card.remove();
+  }
+};
+
+
+    window.mostrarAba = function(aba) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      if (aba === 'pendentes') {
+        document.getElementById("pendentes").classList.remove("hidden");
+        document.getElementById("aprovados").classList.add("hidden");
+        document.querySelectorAll('.tab-button')[0].classList.add('active');
+      } else {
+        document.getElementById("pendentes").classList.add("hidden");
+        document.getElementById("aprovados").classList.remove("hidden");
+        document.querySelectorAll('.tab-button')[1].classList.add('active');
+      }
+    }
+
+    carregarUsuarios();
+
+    
+  </script>
+  
+</body>
+</html>
